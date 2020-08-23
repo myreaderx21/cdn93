@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <title>搜狐视频</title>
+  </head>
+  <style>
+    html, body {height: 100%; width: 100%; }
+    body, p, div {margin: 0; padding: 0; }
+    #sohuplayer{width:100%;height:100%;}
+    .x-next-btn{display: none !important;}
+  </style>
+  <script type="text/javascript" src="//js.tv.itc.cn/base/plugin/showPlayer.js"></script>
+<body>
+    <div id="sohuplayer"></div>
+    <script>
+    function getQueryString(key) {
+        var search = window.location.search,
+            reg = new RegExp('[?&]' + key + '=([^&]+)', 'i'),
+            m = reg.exec(search);
+
+        return m && m.length > 1 ? m[1] : '';
+    }
+
+    // 强制隐藏控制栏
+    var hidedb = getQueryString('hidedb');
+    if(hidedb) {
+        var style1 = document.createElement('style');
+        style1.innerHTML = '.x-dashboard{display:none !important;}';
+        document.head.appendChild(style1);
+    }
+
+
+    (function() {
+        var vid = getQueryString('vid'),
+            bid = getQueryString('bid'),
+            site = getQueryString('site'),
+            autoplay = getQueryString('autoplay') == 'true' ? true : false,
+            cover = unescape(getQueryString('cover')),
+            showCount = getQueryString('showcount') == 'false' ? false : true,
+            api_key = getQueryString('api_key') || '',
+            variables = getQueryString('vars') || [],
+            dlBanner = getQueryString('dlBanner') == 'false' ? false : true,
+            hotVideo = getQueryString('hotVideo') == 'false' ? false : true,
+            infoPanel = getQueryString('infoPanel') == 'false' ? false : true,
+            disablePlaylist = getQueryString('disablePlaylist') == 'false' ? false : true,
+            mute = getQueryString('mute') == '1' ? 1 : 0,
+            resolution = getQueryString('resolution') == 'false' ? false : true;
+
+        if(variables) {
+            try{
+                variables = JSON.parse(decodeURIComponent(variables))
+                if(api_key && Object.prototype.toString.call(variables) == '[object Array]') {
+                    variables.push(['api_key',api_key]);
+                }
+            } catch(e) {}
+        }
+        var eMap = ['data.ok', 'play', 'pause', 'ended'];
+
+        if (!vid && !bid && !lid) {
+            return;
+        }
+
+        var isloop = getQueryString('isloop');
+        if(isloop) {
+            variables.push(['onStop', 'window.swfGotoNewPage'])
+            window.swfGotoNewPage = function() {
+                if(window._player) {
+                    window._player.replay();
+                } else {
+                    // document.querySelector('embed').playVideo();
+                    showPlayer({
+                        el: '#sohuplayer',
+                        vid: vid,
+                        bid: bid,
+                        autoplay: autoplay,
+                        playercover: cover,
+                        variables: variables,
+                        disablePlaylist:disablePlaylist,
+                        mute: mute
+                    });
+                }
+            }
+        }
+
+
+        showPlayer({
+            el: '#sohuplayer',
+            vid: vid,
+            bid: bid,
+            site: site,
+            autoplay: autoplay,
+            playercover: cover,
+            variables: variables,
+            disablePlaylist:disablePlaylist,
+            mute: mute,
+
+            // m站播放器参数
+            showCount: showCount,
+            autoplay: autoplay,
+            dlBanner: dlBanner,
+            hotVideo: hotVideo,
+            infoPanel: infoPanel,
+            resolution: resolution
+        });
+
+        
+
+        // var uc = getQueryString('isuc') == 'true' ? true : false;
+        // if (uc && window._player) {
+        //     for (var i = 0; i < eMap.length; i++) {
+        //         _player.on(eMap[i], (function(arg) {
+        //             return function() {
+        //                 if (window.parent && window.parent.postMessage) {
+        //                     if (eMap[arg] == 'data.ok') {
+        //                         window.parent.postMessage('ready', '*');
+        //                     } else if (eMap[arg] == 'ended') {
+        //                         window.parent.postMessage('end', '*');
+        //                     } else {
+        //                         window.parent.postMessage(eMap[arg], '*');
+        //                     }
+        //                 }
+        //             }
+        //         })(i));
+        //     }
+        // }
+
+    })();
+
+    </script>
+</body>
+
+</html>
+
